@@ -12,6 +12,7 @@ class FindFiles:
         files = dict()
         j = 0
         caminhoAbsoluto = os.path.abspath(self.caminho)
+        print caminhoAbsoluto
         for pastaAtual, subPastas, arquivos in os.walk(caminhoAbsoluto):
             arquivos_log.extend([os.path.join(pastaAtual, arquivo) for arquivo in arquivos if arquivo.endswith(
                 '.log')])
