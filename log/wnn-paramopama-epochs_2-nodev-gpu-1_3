@@ -1,0 +1,33 @@
+/opt/miniconda2/lib/python2.7/site-packages/theano/gpuarray/dnn.py:135: UserWarning: Your cuDNN version is more recent than Theano. If you encounter problems, try updating Theano or downgrading cuDNN to version 5.1.
+  warnings.warn("Your cuDNN version is more recent than "
+Using cuDNN version 6021 on context None
+Mapped name None to device cuda: GeForce GTX 1080 Ti (0000:03:00.0)
+{"timestamp": "2017/07/19 13:49:11", "module": "__main__", "level": "INFO", "message": "T(hidden_activation_function='tanh', word_embedding=u'/data/ner/ptwiki_cetenfolha_cetempublico.trunk.voc5.100wv.ctw5.sample1e_1', start_symbol='</s>', shuffle=True, end_symbol='</s>', seed=1, num_epochs=2, char_window_size=5, word_emb_size=100, decay=u'NORMAL', char_emb_size=10, lr=0.01, test=None, hidden_size=300, word_filters=[u'data.Filters.TransformLowerCaseFilter', u'data.Filters.TransformNumberToZeroFilter'], word_lexicon=None, conv_size=50, batch_size=8, train=u'/data/ner/4-Paramopama_corpus.txt_train.txt', word_window_size=5, normFactor=None, adagrad=True, normalization=u'minmax', char_lexicon=u'/data/ner/char_lexicon.txt', dev=None, label_file=u'/data/ner/labels.txt')"}
+{"timestamp": "2017/07/19 13:49:11", "module": "__main__", "level": "INFO", "message": "floatX=float32"}
+{"timestamp": "2017/07/19 13:49:11", "module": "__main__", "level": "INFO", "message": "device=cuda"}
+{"timestamp": "2017/07/19 13:49:11", "module": "__main__", "level": "INFO", "message": "Loading word filters..."}
+{"timestamp": "2017/07/19 13:49:11", "module": "__main__", "level": "INFO", "message": "Usando o filtro: data.Filters TransformLowerCaseFilter"}
+{"timestamp": "2017/07/19 13:49:11", "module": "__main__", "level": "INFO", "message": "Usando o filtro: data.Filters TransformNumberToZeroFilter"}
+{"timestamp": "2017/07/19 13:49:11", "module": "__main__", "level": "INFO", "message": "Loading word embedding..."}
+{"timestamp": "2017/07/19 13:49:41", "module": "__main__", "level": "INFO", "message": "Loading char lexicon..."}
+{"timestamp": "2017/07/19 13:49:41", "module": "__main__", "level": "INFO", "message": "Loading label lexicon..."}
+{"timestamp": "2017/07/19 13:49:41", "module": "data.Lexicon", "level": "WARNING", "message": "The unknown symbol of the lexicon 'label_lexicon' wasn't defined."}
+{"timestamp": "2017/07/19 13:49:41", "module": "__main__", "level": "INFO", "message": "Normalizing word embedding: minmax"}
+{"timestamp": "2017/07/19 13:49:41", "module": "__main__", "level": "INFO", "message": "Size of word lexicon is 453991 and word embedding size is 100"}
+{"timestamp": "2017/07/19 13:49:41", "module": "__main__", "level": "INFO", "message": "Reading training examples"}
+{"timestamp": "2017/07/19 13:50:06", "module": "data.TokenDatasetReader", "level": "INFO", "message": "Number of tokens read: 290958"}
+{"timestamp": "2017/07/19 13:50:06", "module": "data.BatchIterator", "level": "INFO", "message": "Number of examples: 290958"}
+{"timestamp": "2017/07/19 13:50:06", "module": "data.BatchIterator", "level": "INFO", "message": "Number of batches: 36370"}
+{"timestamp": "2017/07/19 13:50:06", "module": "data.BatchIterator", "level": "INFO", "message": "BatchSize: 8"}
+{"timestamp": "2017/07/19 13:50:06", "module": "__main__", "level": "INFO", "message": "Training algorithm: Adagrad"}
+{"timestamp": "2017/07/19 13:50:06", "module": "__main__", "level": "INFO", "message": "Compiling the network..."}
+{"timestamp": "2017/07/19 13:50:29", "module": "__main__", "level": "INFO", "message": "Training..."}
+{"timestamp": "2017/07/19 13:50:29", "module": "model.BasicModel", "level": "INFO", "message": {"learn_rate": [0.01], "epoch": 0, "iteration": 0}}
+{"timestamp": "2017/07/19 13:52:15", "module": "model.BasicModel", "level": "INFO", "message": {"name": "LossTrain", "iteration": 36370, "subtype": "train", "epoch": 0, "values": {"loss": 0.17737124662658021, "accumLoss": 51607.58317597653, "numExamples": 290958}, "type": "metric"}}
+{"timestamp": "2017/07/19 13:52:15", "module": "model.BasicModel", "level": "INFO", "message": {"name": "AccTrain", "iteration": 36370, "subtype": "train", "epoch": 0, "values": {"accumAccuracy": 274334.0, "numExamples": 290958, "accuracy": 0.942864605888135}, "type": "metric"}}
+{"timestamp": "2017/07/19 13:52:15", "module": "model.BasicModel", "level": "INFO", "message": {"duration": 106, "subtype": "training", "epoch": 0, "type": "duration", "iteration": 36370}}
+{"timestamp": "2017/07/19 13:52:15", "module": "model.BasicModel", "level": "INFO", "message": {"learn_rate": [0.01], "epoch": 1, "iteration": 36370}}
+{"timestamp": "2017/07/19 13:54:04", "module": "model.BasicModel", "level": "INFO", "message": {"name": "LossTrain", "iteration": 72740, "subtype": "train", "epoch": 1, "values": {"loss": 0.08171876004174801, "accumLoss": 23776.726984226916, "numExamples": 290958}, "type": "metric"}}
+{"timestamp": "2017/07/19 13:54:04", "module": "model.BasicModel", "level": "INFO", "message": {"name": "AccTrain", "iteration": 72740, "subtype": "train", "epoch": 1, "values": {"accumAccuracy": 283227.0, "numExamples": 290958, "accuracy": 0.9734291547233621}, "type": "metric"}}
+{"timestamp": "2017/07/19 13:54:04", "module": "model.BasicModel", "level": "INFO", "message": {"duration": 109, "subtype": "training", "epoch": 1, "type": "duration", "iteration": 72740}}
+{"timestamp": "2017/07/19 13:54:04", "module": "__main__", "level": "INFO", "message": "Done!"}

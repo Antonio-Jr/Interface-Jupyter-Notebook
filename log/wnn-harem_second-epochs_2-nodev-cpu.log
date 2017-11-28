@@ -1,0 +1,30 @@
+nohup: ignoring input
+{"timestamp": "2017/07/18 10:51:17", "module": "__main__", "level": "INFO", "message": "T(hidden_activation_function='tanh', word_embedding=u'/data/ner/ptwiki_cetenfolha_cetempublico.trunk.voc5.100wv.ctw5.sample1e_1', start_symbol='</s>', shuffle=True, end_symbol='</s>', seed=1, num_epochs=2, char_window_size=5, word_emb_size=100, decay=u'NORMAL', char_emb_size=10, lr=0.01, test=None, hidden_size=300, word_filters=[u'data.Filters.TransformLowerCaseFilter', u'data.Filters.TransformNumberToZeroFilter'], word_lexicon=None, conv_size=50, batch_size=8, train=u'/data/ner/2-Second_Harem_corpus.txt_train.txt', word_window_size=5, normFactor=None, adagrad=True, normalization=u'minmax', char_lexicon=u'/data/ner/char_lexicon.txt', dev=None, label_file=u'/data/ner/labels.txt')"}
+{"timestamp": "2017/07/18 10:51:17", "module": "__main__", "level": "INFO", "message": "floatX=float32"}
+{"timestamp": "2017/07/18 10:51:17", "module": "__main__", "level": "INFO", "message": "device=cpu"}
+{"timestamp": "2017/07/18 10:51:17", "module": "__main__", "level": "INFO", "message": "Loading word filters..."}
+{"timestamp": "2017/07/18 10:51:17", "module": "__main__", "level": "INFO", "message": "Usando o filtro: data.Filters TransformLowerCaseFilter"}
+{"timestamp": "2017/07/18 10:51:17", "module": "__main__", "level": "INFO", "message": "Usando o filtro: data.Filters TransformNumberToZeroFilter"}
+{"timestamp": "2017/07/18 10:51:17", "module": "__main__", "level": "INFO", "message": "Loading word embedding..."}
+{"timestamp": "2017/07/18 10:51:45", "module": "__main__", "level": "INFO", "message": "Loading char lexicon..."}
+{"timestamp": "2017/07/18 10:51:45", "module": "__main__", "level": "INFO", "message": "Loading label lexicon..."}
+{"timestamp": "2017/07/18 10:51:45", "module": "data.Lexicon", "level": "WARNING", "message": "The unknown symbol of the lexicon 'label_lexicon' wasn't defined."}
+{"timestamp": "2017/07/18 10:51:45", "module": "__main__", "level": "INFO", "message": "Normalizing word embedding: minmax"}
+{"timestamp": "2017/07/18 10:51:45", "module": "__main__", "level": "INFO", "message": "Size of word lexicon is 453991 and word embedding size is 100"}
+{"timestamp": "2017/07/18 10:51:45", "module": "__main__", "level": "INFO", "message": "Reading training examples"}
+{"timestamp": "2017/07/18 10:51:52", "module": "data.TokenDatasetReader", "level": "INFO", "message": "Number of tokens read: 75335"}
+{"timestamp": "2017/07/18 10:51:52", "module": "data.BatchIterator", "level": "INFO", "message": "Number of examples: 75335"}
+{"timestamp": "2017/07/18 10:51:52", "module": "data.BatchIterator", "level": "INFO", "message": "Number of batches: 9417"}
+{"timestamp": "2017/07/18 10:51:52", "module": "data.BatchIterator", "level": "INFO", "message": "BatchSize: 8"}
+{"timestamp": "2017/07/18 10:51:52", "module": "__main__", "level": "INFO", "message": "Training algorithm: Adagrad"}
+{"timestamp": "2017/07/18 10:51:52", "module": "__main__", "level": "INFO", "message": "Compiling the network..."}
+{"timestamp": "2017/07/18 10:51:55", "module": "__main__", "level": "INFO", "message": "Training..."}
+{"timestamp": "2017/07/18 10:51:55", "module": "model.BasicModel", "level": "INFO", "message": {"learn_rate": [0.01], "epoch": 0, "iteration": 0}}
+{"timestamp": "2017/07/18 10:52:28", "module": "model.BasicModel", "level": "INFO", "message": {"name": "LossTrain", "iteration": 9417, "subtype": "train", "epoch": 0, "values": {"loss": 0.31894108519455555, "accumLoss": 24027.426653131843, "numExamples": 75335}, "type": "metric"}}
+{"timestamp": "2017/07/18 10:52:28", "module": "model.BasicModel", "level": "INFO", "message": {"name": "AccTrain", "iteration": 9417, "subtype": "train", "epoch": 0, "values": {"accumAccuracy": 67511.0, "numExamples": 75335, "accuracy": 0.8961438906218889}, "type": "metric"}}
+{"timestamp": "2017/07/18 10:52:28", "module": "model.BasicModel", "level": "INFO", "message": {"duration": 33, "subtype": "training", "epoch": 0, "type": "duration", "iteration": 9417}}
+{"timestamp": "2017/07/18 10:52:28", "module": "model.BasicModel", "level": "INFO", "message": {"learn_rate": [0.01], "epoch": 1, "iteration": 9417}}
+{"timestamp": "2017/07/18 10:53:02", "module": "model.BasicModel", "level": "INFO", "message": {"name": "LossTrain", "iteration": 18834, "subtype": "train", "epoch": 1, "values": {"loss": 0.184283856234972, "accumLoss": 13883.024309461616, "numExamples": 75335}, "type": "metric"}}
+{"timestamp": "2017/07/18 10:53:02", "module": "model.BasicModel", "level": "INFO", "message": {"name": "AccTrain", "iteration": 18834, "subtype": "train", "epoch": 1, "values": {"accumAccuracy": 70391.0, "numExamples": 75335, "accuracy": 0.9343731333377581}, "type": "metric"}}
+{"timestamp": "2017/07/18 10:53:02", "module": "model.BasicModel", "level": "INFO", "message": {"duration": 34, "subtype": "training", "epoch": 1, "type": "duration", "iteration": 18834}}
+{"timestamp": "2017/07/18 10:53:02", "module": "__main__", "level": "INFO", "message": "Done!"}
