@@ -2,6 +2,7 @@
 import os, json, ast, sys
 import string
 
+
 class FindFiles:
     def __init__(self, caminho):
         self.caminho = caminho
@@ -11,6 +12,7 @@ class FindFiles:
         files = dict()
         j = 0
         caminhoAbsoluto = os.path.abspath(self.caminho)
+        print caminhoAbsoluto
         for pastaAtual, subPastas, arquivos in os.walk(caminhoAbsoluto):
             arquivos_log.extend([os.path.join(pastaAtual, arquivo) for arquivo in arquivos if arquivo.endswith(
                 '.log')])
@@ -24,11 +26,10 @@ class FindFiles:
                 for line in log:
                     try:
 
-                        data = json.loads(line)
+                        data = json.loads(line, encoding="utf-8")
                         if "T(" in data['message']:
                             x = dict()
-                            t = data['message'][2:-1].replace("=", ':')
-                            z = ""
+                            t = data['message'][2:-1].replace("=", ':').encoding('utf-8')
                             if 'lr' in t:
                                 idxKey = t.index('lr')
                                 endKey = string.find(t, ':', idxKey)
@@ -92,11 +93,12 @@ class RefineJson:
         self.refinado['multiple'] = dict()
         for i in self.dicionario:
 
+
             if 'lr' in self.dicionario[i]['config']:
                 if not 'lr' in self.refinado['unique'] and not 'lr' in self.refinado['multiple']:
                     self.refinado['unique']['lr'] = self.dicionario[i]['config']['lr']
 
-                elif ('lr' in self.refinado['unique'] and not 'lr' in self.refinado['multiple']) and cmp(self.refinado['unique']['lr'], self.dicionario[i]['config']['lr']) != 0:
+                elif ('lr' in self.refinado['unique'] and not 'lr' in self.refinado['multiple']) and self.refinado['unique']['lr'] != self.dicionario[i]['config']['lr']:
                     self.refinado['multiple']['lr'] = list()
                     self.refinado['multiple']['lr'].append(self.refinado['unique']['lr'])
                     del self.refinado['unique']['lr']
@@ -158,20 +160,35 @@ class RefineJson:
             lista = list(conj)
             del self.refinado['multiple'][i]
             self.refinado['multiple'][i] = sorted(lista)
-        return ast.literal_eval(json.dumps(ast.literal_eval(json.dumps(self.refinado))))
+        return self.refinado
 
 
     def montaToggleButtons(self):
-        # print(json.dumps(self.refinado, indent=4))
         listLr = []
         if 'lr' in self.refinado['multiple']:
             for v in self.refinado['multiple']['lr']:
                 listLr.append(v)
         return listLr
 
-# encontraArquivosEmPastaRecursivamente('/home/junior/PycharmProjects/', '.log')
-# montajson('/home/junior/PycharmProjects/lia-pln-notebooks-master/shortdoc_class/distant_supervision/log/')
-#
+class applyFilters:
+    def __init__(self, filters, files):
+        self.filter = filters
+        self.files = files
+        response = dict()
+        try:
+            for i in self.files:
+                for j in self.filter:
+                    for k in self.filter[j]:
+                        if cmp(k,str(self.files[i]['config'][j])) == 0:
+                            if not i in response:
+                                response[j] = list()
+                            print(i);
+                            response[j].append(self.files[i]['file'])
+        except:
+            pass
+        print (response)
+
+
 
 info = raw_input("Insira o nome da pasta que deseja abrir os logs: \n")
 ff = FindFiles(info)
