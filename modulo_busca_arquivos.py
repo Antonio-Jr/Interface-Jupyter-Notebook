@@ -2,7 +2,6 @@
 import os, json, ast, sys
 import string
 
-
 class FindFiles:
     def __init__(self, caminho):
         self.caminho = caminho
@@ -12,10 +11,8 @@ class FindFiles:
         files = dict()
         j = 0
         caminhoAbsoluto = os.path.abspath(self.caminho)
-        print caminhoAbsoluto
         for pastaAtual, subPastas, arquivos in os.walk(caminhoAbsoluto):
-            arquivos_log.extend([os.path.join(pastaAtual, arquivo) for arquivo in arquivos if arquivo.endswith(
-                '.log')])
+            arquivos_log.extend([os.path.join(pastaAtual, arquivo) for arquivo in arquivos if arquivo.endswith('.log')])
 
         for i in arquivos_log:
             files[j] = {}
@@ -25,11 +22,10 @@ class FindFiles:
             with open(i) as log:
                 for line in log:
                     try:
-
-                        data = json.loads(line, encoding="utf-8")
+                        data = json.loads(line.encode("utf-8"))
                         if "T(" in data['message']:
                             x = dict()
-                            t = data['message'][2:-1].replace("=", ':').encoding('utf-8')
+                            t = data['message'][2:-1].replace("=", ':')
                             if 'lr' in t:
                                 idxKey = t.index('lr')
                                 endKey = string.find(t, ':', idxKey)
@@ -91,8 +87,8 @@ class RefineJson:
         self.refinado = dict()
         self.refinado['unique'] = dict()
         self.refinado['multiple'] = dict()
-        for i in self.dicionario:
 
+        for i in self.dicionario:
 
             if 'lr' in self.dicionario[i]['config']:
                 if not 'lr' in self.refinado['unique'] and not 'lr' in self.refinado['multiple']:
@@ -170,31 +166,40 @@ class RefineJson:
                 listLr.append(v)
         return listLr
 
-class applyFilters:
+class ApplyFilters:
     def __init__(self, filters, files):
         self.filter = filters
         self.files = files
         response = dict()
-        try:
-            for i in self.files:
-                for j in self.filter:
-                    for k in self.filter[j]:
-                        if cmp(k,str(self.files[i]['config'][j])) == 0:
-                            if not i in response:
-                                response[j] = list()
-                            print(i);
-                            response[j].append(self.files[i]['file'])
-        except:
-            pass
-        print (response)
 
+        for i in self.files:
+            for j in self.filter:
+                if j in self.files[i]['config']:
+                    try:
+                        for v in self.filter[j]:
+                            if str(v) in self.files[i]['config'][j]:
+                                if not j in response:
+                                    response[j] = list()
+                                response[j].append(self.files[i]['file'])
+                    except:
+                        pass
+
+        return response
+
+
+
+# teste = dict()
+# teste['train'] = set()
+# teste['train'].add('/dpgs-data/ner/data/2-Second_Harem_corpus.txt_train.txt')
+# teste['train'].add('/dpgs-data/ner/data/harem/first.txt_train.txt')
+# teste['lr'] =  set()
+# teste['lr'].add(0.01)
+# teste['lr'].add(0.001)
 
 
 info = raw_input("Insira o nome da pasta que deseja abrir os logs: \n")
 ff = FindFiles(info)
 retorno = ff.montaJson()
 # print (retorno)
-rf = RefineJson(retorno)
-t = rf.build()
-b = rf.montaToggleButtons()
-# print b
+rj = RefineJson(retorno)
+t = rj.build()
