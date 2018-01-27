@@ -1,6 +1,7 @@
-# *--coding utf-8--*
-import os, json, ast, sys
-import string
+# -*- coding: utf-8 -*-
+import codecs
+import os, json, ast
+import string, itertools
 
 class FindFiles:
     def __init__(self, caminho):
@@ -19,64 +20,46 @@ class FindFiles:
             files[j]['file'] = i
             files[j]['config'] = {}
             files[j]['content'] = []
-            with open(i) as log:
+            with codecs.open(i, "rb") as log:
                 for line in log:
                     try:
-                        data = json.loads(line.encode("utf-8"))
+                        data = json.loads(line.encode("ascii", "replace"))
                         if "T(" in data['message']:
-                            x = dict()
-                            t = data['message'][2:-1].replace("=", ':')
-                            if 'lr' in t:
-                                idxKey = t.index('lr')
-                                endKey = string.find(t, ':', idxKey)
-                                idxVal = string.find(t, ", ", endKey)
-                                x[t[idxKey:endKey]]= t[endKey+1:idxVal]
-                            if 'train' in t:
-                                idxKey = t.index('train')
-                                endKey = string.find(t, ':', idxKey)
-                                idxVal = string.find(t, ", ", endKey)
-                                x[t[idxKey:endKey]]= t[endKey+1:idxVal]
-                            if 'dev' in t:
-                                idxKey = t.index('dev')
-                                endKey = string.find(t, ':', idxKey)
-                                idxVal = string.find(t, ", ", endKey)
-                                x[t[idxKey:endKey]]= t[endKey+1:idxVal]
-                            if 'hidden_size' in t:
-                                idxKey = t.index('hidden_size')
-                                endKey = string.find(t, ':', idxKey)
-                                idxVal = string.find(t, ", ", endKey)
-                                x[t[idxKey:endKey]]= t[endKey+1:idxVal]
-                            if 'decay' in t:
-                                idxKey = t.index('decay')
-                                endKey = string.find(t, ':', idxKey)
-                                idxVal = string.find(t, ", ", endKey)
-                                x[t[idxKey:endKey]]= t[endKey+1:idxVal]
+                            stringJson = data['message'][2:-1]
+                            splitString = stringJson.split("=")
+                            lista = list()
 
-                            del(data['message'])
-                            data['message'] = x
+                            for row in splitString:
+                                row = row.encode("ascii", "replace").replace("u'", "").replace("'", "")
+                                if row[0] == '[':
+                                    endKey = string.find(row, "]")
+                                    lista.append(row[:endKey+1])
+                                    lista.append(row[endKey+2:].replace(" ", ""))
+                                else:
+                                    row = row.replace(" ", "")
+                                    lista.extend(row.split(","))
+
+                            newDict = dict(itertools.izip_longest(*[iter(lista)] * 2))
+                            data['message'] = newDict
+
                         if not files[j]['config']:
-                            if 'train' in data['message']:
-                                files[j]['config']['train'] = data['message']['train']
 
-                            if 'dev' in data['message']:
-                                files[j]['config']['dev'] = data['message']['dev']
+                            for k, v in data['message'].iteritems():
+                                if type(v) != bool:
+                                    try:
+                                        value = ast.literal_eval(v)
+                                        files[j]['config'][k] = value
+                                    except Exception:
+                                        files[j]['config'][k] = v
+                                else:
+                                    files[j]['config'][k] = v
 
-                            if 'lr' in data['message']:
-                                files[j]['config']['lr'] = data['message']['lr']
-
-                            if 'hidden_size' in data['message']:
-                                files[j]['config']['hidden_size'] = data['message']['hidden_size']
-
-                            if 'decay' in data['message']:
-                                files[j]['config']['decay'] = data['message']['decay']
                         else:
                             files[j]['content'].append(data)
 
-                    except BaseException as error:
+                    except BaseException:
                         pass
-                        # print ('Ocorreu um erro ao manipular o arquivo %s.\n {}').format(error) %i
             j += 1
-
         return files
 
 class RefineJson:
@@ -89,87 +72,29 @@ class RefineJson:
         self.refinado['multiple'] = dict()
 
         for i in self.dicionario:
+            for k, v in self.dicionario[i]['config'].iteritems():
+                if not k in self.refinado['unique'] and not k in self.refinado['multiple']:
+                    self.refinado['unique'][k] = v
 
-            if 'lr' in self.dicionario[i]['config']:
-                if not 'lr' in self.refinado['unique'] and not 'lr' in self.refinado['multiple']:
-                    self.refinado['unique']['lr'] = self.dicionario[i]['config']['lr']
+                elif (k in self.refinado['unique'] and not k in self.refinado['multiple']) and self.refinado['unique'][k] != v:
+                    self.refinado['multiple'][k] = list()
+                    self.refinado['multiple'][k].append(self.refinado['unique'][k])
+                    self.refinado['multiple'][k].append(v)
+                    self.refinado['multiple'][k].sort()
+                    del self.refinado['unique'][k]
 
-                elif ('lr' in self.refinado['unique'] and not 'lr' in self.refinado['multiple']) and self.refinado['unique']['lr'] != self.dicionario[i]['config']['lr']:
-                    self.refinado['multiple']['lr'] = list()
-                    self.refinado['multiple']['lr'].append(self.refinado['unique']['lr'])
-                    del self.refinado['unique']['lr']
+                elif k in self.refinado['multiple'] and not v in self.refinado['multiple'][k]:
+                    self.refinado['multiple'][k].append(v)
+                    self.refinado['multiple'][k].sort()
 
-                elif 'lr' in self.refinado['multiple']:
-                    self.refinado['multiple']['lr'].append(self.dicionario[i]['config']['lr'])
-
-            if 'hidden_size' in self.dicionario[i]['config']:
-                if not 'hidden_size' in self.refinado['unique'] and not 'hidden_size' in self.refinado['multiple']:
-                    self.refinado['unique']['hidden_size'] = self.dicionario[i]['config']['hidden_size']
-
-                elif 'hidden_size' in self.refinado['unique'] and self.refinado['unique']['hidden_size'] != self.dicionario[i]['config']['hidden_size']:
-                    self.refinado['multiple']['hidden_size'] = list()
-                    self.refinado['multiple']['hidden_size'].append(self.refinado['unique']['hidden_size'])
-                    del self.refinado['unique']['hidden_size']
-
-                elif 'hidden_size' in self.refinado['multiple']:
-                    self.refinado['multiple']['hidden_size'].append(self.dicionario[i]['config']['hidden_size'])
-
-            if 'train' in self.dicionario[i]['config']:
-                if not 'train' in self.refinado['unique'] and not 'train' in self.refinado['multiple']:
-                    self.refinado['unique']['train'] = self.dicionario[i]['config']['train']
-
-                elif 'train' in self.refinado['unique'] and self.dicionario[i]['config']['train'] != self.refinado['unique']['train']:
-                    self.refinado['multiple']['train'] = list()
-                    self.refinado['multiple']['train'].append(self.refinado['unique']['train'])
-                    del self.refinado['unique']['train']
-
-                elif 'train' in self.refinado['multiple']:
-                    self.refinado['multiple']['train'].append(self.dicionario[i]['config']['train'])
-
-            if 'dev' in self.dicionario[i]['config']:
-                if not 'dev' in self.refinado['unique'] and not 'dev' in self.refinado['multiple']:
-                    self.refinado['unique']['dev'] = self.dicionario[i]['config']['dev']
-
-                elif 'dev' in self.refinado['unique'] and self.refinado['unique']['dev'] != self.dicionario[i]['config']['dev']:
-                    self.refinado['multiple']['dev'] = list()
-                    self.refinado['multiple']['dev'].append(self.refinado['unique']['dev'])
-                    del self.refinado['unique']['dev']
-
-                elif 'dev' in self.refinado['multiple']:
-                    self.refinado['multiple']['dev'].append(self.dicionario[i]['config']['dev'])
-
-            if 'decay' in self.dicionario[i]['config']:
-                if not 'decay' in self.refinado['unique'] and not 'decay' in self.refinado['multiple']:
-                    self.refinado['unique']['decay'] = self.dicionario[i]['config']['decay']
-
-                elif 'decay' in self.refinado['unique'] and self.refinado['unique']['decay'] != self.dicionario[i]['config']['decay']:
-                    self.refinado['multiple']['decay'] = list()
-                    self.refinado['multiple']['decay'].append(self.refinado['unique']['decay'])
-                    del self.refinado['unique']['decay']
-
-                elif 'decay' in self.refinado['multiple']:
-                    self.refinado['multiple']['decay'].append(self.dicionario[i]['config']['decay'])
-
-        key = self.refinado['multiple'].keys()
-        for i in key:
-            conj = set(self.refinado['multiple'][i])
-            lista = list(conj)
-            del self.refinado['multiple'][i]
-            self.refinado['multiple'][i] = sorted(lista)
         return self.refinado
-
-
-    def montaToggleButtons(self):
-        listLr = []
-        if 'lr' in self.refinado['multiple']:
-            for v in self.refinado['multiple']['lr']:
-                listLr.append(v)
-        return listLr
 
 class ApplyFilters:
     def __init__(self, filters, files):
         self.filter = filters
         self.files = files
+
+    def make(self):
         response = dict()
 
         for i in self.files:
@@ -177,25 +102,13 @@ class ApplyFilters:
                 if j in self.files[i]['config']:
                     try:
                         for v in self.filter[j]:
-                            if str(v) in self.files[i]['config'][j]:
+                            if cmp(v, ast.literal_eval(self.files[i]['config'][j])) == 0:
                                 if not j in response:
                                     response[j] = list()
                                 response[j].append(self.files[i]['file'])
                     except:
                         pass
-
         return response
-
-
-
-# teste = dict()
-# teste['train'] = set()
-# teste['train'].add('/dpgs-data/ner/data/2-Second_Harem_corpus.txt_train.txt')
-# teste['train'].add('/dpgs-data/ner/data/harem/first.txt_train.txt')
-# teste['lr'] =  set()
-# teste['lr'].add(0.01)
-# teste['lr'].add(0.001)
-
 
 info = raw_input("Insira o nome da pasta que deseja abrir os logs: \n")
 ff = FindFiles(info)
@@ -203,3 +116,6 @@ retorno = ff.montaJson()
 # print (retorno)
 rj = RefineJson(retorno)
 t = rj.build()
+print json.dumps(t, indent=4)
+# j = ApplyFilters(teste, retorno)
+# j.make()
