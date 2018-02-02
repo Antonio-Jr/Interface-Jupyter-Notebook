@@ -98,24 +98,36 @@ class ApplyFilters:
         response = dict()
 
         for i in self.files:
-            for j in self.filter:
-                if j in self.files[i]['config']:
+            for k in self.filter.keys():
+                k = k.encode("ascii", "replace")
+                if k in self.files[i]['config']:
                     try:
-                        for v in self.filter[j]:
-                            if cmp(v, ast.literal_eval(self.files[i]['config'][j])) == 0:
-                                if not j in response:
-                                    response[j] = list()
-                                response[j].append(self.files[i]['file'])
-                    except:
+                        for v in self.filter[k]:
+                            v = v.encode("ascii", "replace")
+
+                            try:
+                                value = ast.literal_eval(v)
+                            except Exception:
+                                value = v
+
+                            if value == self.files[i]['config'][k]:
+                                if not k in response:
+                                    response[k] = list()
+                                response[k].append(self.files[i]['file'])
+                    except Exception as error:
                         pass
         return response
+# teste = {'test': ['/data/ner/test_set_1.txt'], 'normFactor': ['0.1'], 'seed': ['31'], 'label_file': ['/home/eraldo/lia/src/lia-pln-datasets-models/ner/data/labels.txt', '/data/ner/labels.txt'], 'hidden_size': ['200']}
+
+# teste = {'eval_per_iteration': ['100'], 'lr': ['0.005', '0.01']}
+
+# teste = {u'test': [u'/data/ner/test_set_1.txt'], u'normFactor': [u'0.1'], u'seed': [u'31'], u'label_file': [u'/home/eraldo/lia/src/lia-pln-datasets-models/ner/data/labels.txt', u'/dpgs-data/ner/data/labels.txt'], u'hidden_size': [u'200']}
 
 info = raw_input("Insira o nome da pasta que deseja abrir os logs: \n")
 ff = FindFiles(info)
 retorno = ff.montaJson()
-# print (retorno)
 rj = RefineJson(retorno)
 t = rj.build()
-print json.dumps(t, indent=4)
+# print json.dumps(t, indent=4)
 # j = ApplyFilters(teste, retorno)
-# j.make()
+# print(j.make())
