@@ -3,9 +3,6 @@ import codecs
 import os, json, ast
 import string, itertools
 
-from isort.pie_slice import OrderedSet
-
-
 class FindFiles:
     def __init__(self, caminho):
         self.caminho = caminho
@@ -14,7 +11,10 @@ class FindFiles:
         arquivos_log = []
         files = dict()
         j = 0
+        print(self.caminho)
         caminhoAbsoluto = os.path.abspath(self.caminho)
+        # if self.caminho == "":
+        #     print(caminhoAbsoluto)
         for pastaAtual, subPastas, arquivos in os.walk(caminhoAbsoluto):
             arquivos_log.extend([os.path.join(pastaAtual, arquivo) for arquivo in arquivos if arquivo.endswith('.log')])
 
@@ -180,7 +180,7 @@ info = raw_input("Insira o nome da pasta que deseja abrir os logs: \n")
 ff = FindFiles(info)
 retorno = ff.montaJson()
 rj = RefineJson(retorno)
-t = rj.build()
+refinado = rj.build()
 
 # print retorno[0]['file']
 # print set(retorno[0]['config'])
@@ -194,3 +194,5 @@ t = rj.build()
 # print json.dumps(t, indent=4)
 # j = ApplyFilters(teste, retorno)
 # print(j.make())
+
+
