@@ -3828,6 +3828,9 @@ arquivo = {'wnn-harem_second-epochs_100-batch_size_8-hidden_size_100.log': {u'ti
 
 class montaTree:
 
+    def __init__(self):
+        self.numProperties = {}
+
     def buildJsonSet(self, dictionary):
 
         if isinstance(dictionary, dict):
@@ -3886,6 +3889,20 @@ class montaTree:
         else:
             yield indict
 
+    def _addPath(self, path):
+        d = self.numProperties
+        for p in path[:-1]:
+            d = d.setdefault(p, {})
+        numProp = path[-1]
+        d.setdefault(numProp, None)
+
+    def fillNumProperties(self, d, path=[]):
+        if isinstance(d, dict):
+            for key, val in d.items():
+                self.fillNumProperties(val, path + [key])
+        elif isinstance(d, (float, int)):
+            self._addPath(path)
+
 
 teste =  {'macro': {'recall':
             "0.20686026936026936", 'precision': 0.11738162212845757, 'f': 0.14977456404507988}, 'perLabel': {'truePositives': {'1': 0,
@@ -3901,10 +3918,10 @@ for i in arquivo['wnn-harem_second-epochs_100-batch_size_8-hidden_size_100.log']
         j = i.split(":")
         i = str("{'"+j[0]+"'"+":'"+j[1]+"'}")
     if not isinstance(i, unicode):
-        t = mt.dict_generator(ast.literal_eval(i))
+        mt.fillNumProperties(ast.literal_eval(i))
 
-        for i in t:
-            print i
+print json.dumps(mt.numProperties, indent=2)
+
 #             if i != 0.001:
 #                 if len(i) == 2:
 #                     if not i[0] in execute:
