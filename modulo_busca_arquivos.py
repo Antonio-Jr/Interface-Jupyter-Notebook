@@ -176,11 +176,11 @@ class ApplyFilters:
 # teste = {u'test': [u'/data/ner/test_set_1.txt'], u'normFactor': [u'0.1'], u'seed': [u'31'], u'label_file': [
 # u'/home/eraldo/lia/src/lia-pln-datasets-models/ner/data/labels.txt', u'/dpgs-data/ner/data/labels.txt'], u'hidden_size': [u'200']}
 
-info = raw_input("Insira o nome da pasta que deseja abrir os logs: \n")
-ff = FindFiles(info)
-retorno = ff.montaJson()
-rj = RefineJson(retorno)
-refinado = rj.build()
+# info = raw_input("Insira o nome da pasta que deseja abrir os logs: \n")
+# ff = FindFiles(info)
+# retorno = ff.montaJson()
+# rj = RefineJson(retorno)
+# refinado = rj.build()
 
 # print retorno[0]['file']
 # print set(retorno[0]['config'])

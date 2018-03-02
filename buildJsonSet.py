@@ -3830,6 +3830,7 @@ class montaTree:
 
     def __init__(self):
         self.numProperties = {}
+        self.dict = {'message':self.numProperties}
 
     def buildJsonSet(self, dictionary):
 
@@ -3920,7 +3921,7 @@ for i in arquivo['wnn-harem_second-epochs_100-batch_size_8-hidden_size_100.log']
     if not isinstance(i, unicode):
         mt.fillNumProperties(ast.literal_eval(i))
 
-print json.dumps(mt.numProperties, indent=2)
+print json.dumps(mt.dict, indent=2)
 
 #             if i != 0.001:
 #                 if len(i) == 2:

@@ -48,7 +48,7 @@ class Layouts:
         return Layout(width="100%", align_self="center")
 
     def labelCaracteristicasMultiplas_layout(self):
-        return Layout(width="91%", align_self="flex-start", left="2%")
+        return Layout(width="91%", align_self="flex-start")
 
     def labelFilterMultiple_layout(self):
         return Layout(width="95%", align_self="center")
