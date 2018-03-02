@@ -36,24 +36,7 @@ class Events:
 
 
 
-    def renderJson(self, n):
-        import Elements as elm
-        conjuntos = set
-        indices = list()
-        for i in elm.selectMultiple:
-            for j in retorno:
-                if file_Path[elm.selectMultiple.options[i]] in retorno[j]['file']:
-                    indices.append(j)
 
-        for i in conjuntos:
-            conjuntos.append(retorno[j]['content'])
-            conj = set(conjuntos[i]) & conj
-
-        print conj
-
-    #     for i in indices:
-    #         for j in conj:
-    #             print retorno[i]['content'][j]
 
 
 

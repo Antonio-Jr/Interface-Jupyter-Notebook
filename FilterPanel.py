@@ -1,3 +1,4 @@
+# encoding: utf-8
 from Appearance import Layouts
 from ipywidgets import widgets
 from IPython.display import display, HTML
@@ -39,13 +40,24 @@ class BuildFilterPanel:
                 text-align: left;
                 font-size: 13px;
                 }
+                
+            .space-checkBox{
+                text-align: left;
+                font-size: 13px;
+                margin-left: 3%;
+                }
         
             .vazio{
                 color: red;
                 font-size: 12px;
                 text-align: left;
                 }
-        
+            
+            .center{
+                text-align: center;
+                font-size: 17px;
+                }
+                
             .blue{
                 color: blue;
                 font-size: 11.5px;
@@ -61,6 +73,10 @@ class BuildFilterPanel:
         
             .top-line{
                 border-top: 1px groove black;
+                }
+            .border{
+                border: 1px groove black;
+                border-radius: 5px;
                 }
             </style>"""
 
@@ -78,9 +94,11 @@ class BuildFilterPanel:
         ###### Variables Creation ######
         self.unicos = list()
         self.multiplas = list()
+        self.finded = list()
         self.filtro = dict()
 
         ###### Variable that receive external methods return - Creation ######
+        self.emExibicao = widgets.Label(value="", align_self="center");
         self.buildJson = FindFiles(path)
         self.mj = self.buildJson.montaJson()
         self.refineJson = RefineJson(self.mj)
@@ -142,7 +160,7 @@ class BuildFilterPanel:
                 self.filtro[key].remove(value)
 
     def _checkBoxMultipleFilters(self, description, auxiliar):
-        return widgets.Checkbox(description=description, encoding="ascii", width="100%", display='flex', indent=False, style={"description_width": auxiliar}).add_class('space')
+        return widgets.Checkbox(description=description, encoding="ascii", width="100%", display='flex', indent=False, style={"description_width": auxiliar}).add_class('space-checkBox')
 
     def _labelMultipleFilter(self, value, description):
         return widgets.Label(value=value.capitalize(), description=description.capitalize(), display="flex-shrink", layout=lt.labelFilterMultiple_layout()).add_class("space")
@@ -177,11 +195,30 @@ class BuildFilterPanel:
     def _applyChooseButton(self):
         self.applyChooses.layout = lt.applyChooseButton_layout()
         self.applyChooses.style.button_color = "#009850"
-        self.applyChooses.on_click(self.renderJson)
+        self.applyChooses.on_click(self._renderJson)
 
-    def montar_accordions(self, jsons):
+    def _renderJson(self, n):
+        import Elements as elm
+        conjuntos = set
+        indices = list()
+        for i in elm.selectMultiple:
+            for j in self.mj:
+                if self.exibeFiltrados.file_Path[elm.selectMultiple.options[i]] in self.mj[j]['file']:
+                    indices.append(j)
+
+        for i in conjuntos:
+            conjuntos.append(self.mj[j]['content'])
+            conj = set(conjuntos[i]) & conj
+
+        print conj
+
+    #     for i in indices:
+    #         for j in conj:
+    #             print retorno[i]['content'][j]
+
+    def exibeFiltrados(self, jsons):
         applyChooses = self._applyChooseButton()
-        selectMultiple = self._selectMultiple()
+        self.selectMultiple = self._selectMultiple()
         items = list()
         file_Path = dict()
 
@@ -201,7 +238,11 @@ class BuildFilterPanel:
                     #                 accordions.append(accord)
 
                     items.append(arq)
-        selectMultiple.options = [i for i in items]
+        options = [i for i in items]
+        self.selectMultiple.options = options
+        self.selectMultiple.layout.visibility = "visible"
+        display(self.selectMultiple)
+        # display(self.finded)
         # main_box.children = [widgets.VBox([widgets.Label(value='Arquivos Retornados:'), selectMultiple, applyChooses],layout=lt.accordionChildren_layout())]
         # display(main_box)
 
@@ -214,9 +255,11 @@ class BuildFilterPanel:
                 capturados.add(v)
 
         if len(filtrado.keys()) != 0:
-            self.emExibicao.value = "Exibindo " + str(len(capturados)) + " de " + str(len(self.mj.keys())) + " arquivos"
+            self.emExibicao.value = "Sua busca retornou " + str(len(capturados)) + " de " + str(len(self.mj.keys())) + " arquivos"
 
-        self._montar_accordions(jsons=capturados)
+        self.finded = list(capturados)
+        display('Os arquivos estao salvos na varivel finded. Para visualizar solicite a impressao da mesma. Caso queira exibir na caixa de dialogo, invoque o metodo exibeFiltrados.')
+        # self.exibeFiltrados(jsons=capturados)
 
     def _uniqueCollapse(self):
         self.uniquePlusCollapse.children = [widgets.Label(value="Caracteristicas Unicas", description="Caracteristicas Unicas", display="flex-shrink", layout = lt.uniqueCollapse_layout()), self._collapsable()]
@@ -240,10 +283,14 @@ class BuildFilterPanel:
         self.collapse.on_click(self._collapseUnicas)
         return self.collapse
 
+    def _exibicao(self):
+        self.emExibicao = widgets.Label(value="Foram encontrados "+str(len(self.mj))+ " arquivos.").add_class("center")
+        return self.emExibicao
 
     def _leftBox(self):
-        left_box = widgets.VBox().add_class('vertical-line')
-        left_box.children = [widgets.Label(value="Filtros", description="Filtros", display="flex-shrink", layout=lt.leftBox_layout()),
+        left_box = widgets.VBox()
+        left_box.children = [self._exibicao(),
+                            widgets.Label(value="Filtros", description="Filtros", display="flex-shrink", layout=lt.leftBox_layout()),
                              self._uniqueCollapse(),
                              self._staticBox(),
                              widgets.Label(value="Caracteristicas Multiplas", description="Caracteristicas Multiplas", display="flex-shrink",

@@ -27,7 +27,7 @@ class Layouts:
         return Layout(width="90%", flex_direction="column", display="flex")
 
     def collapseButton(self):
-        return Layout(width="30px", align_self="flex-end", display="flex-wrap")
+        return Layout(width="40px", align_self="flex-end", display="flex-wrap")
 
     def accordionChildren_layout(self):
         return Layout(width="40%")
