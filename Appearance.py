@@ -18,7 +18,7 @@ class Layouts:
         return Layout(width="90%", top="1%", align_self="center", display="justify-content")
 
     def selectMultiple_layout(self):
-        return Layout(width='99%', flex_flow='column', display="flex", align_items='inherit')
+        return Layout(width='99.5%', flex_flow='column', display="flex", align_items='inherit')
 
     def staticBox_layout(self):
         return Layout(width="95%", flex_flow="column", display="inline-flex", align_self="center")
