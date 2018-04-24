@@ -5,10 +5,13 @@ import ast
 from IPython.display import display, HTML
 from ipywidgets import widgets
 
-from Appearance import Layouts
+from Appearance import LayoutSytle
 from modulo_busca_arquivos import FindFiles, RefineJson, ApplyFilters
 
-lt = Layouts()
+_lt = LayoutSytle()
+_arquivos = dict()
+_refined = {}
+_fullFiles = {}
 
 class BuildFilterPanel:
 
@@ -97,6 +100,7 @@ class BuildFilterPanel:
         self._applyChooses = widgets.Button(description="Aplicar", button_style="primary", icon="fa-check-circle")
 
         ###### Variables Creation ######
+        self._path = path
         self._unicos = list()
         self._multiplas = list()
         self.finded = list()
@@ -105,13 +109,20 @@ class BuildFilterPanel:
         self._file_Path = dict()
 
         ###### Variable that receive external methods return - Creation ######
-        self._emExibicao = widgets.Label(value="", align_self="center");
-        self._buildJson = FindFiles(path)
+        self._emExibicao = widgets.Label(value="", align_self="center")
+        self._buildJson = FindFiles(self._path)
         self._mj = self._buildJson.montaJson()
         self._refineJson = RefineJson(self._mj)
         self._json = self._refineJson.build()
 
+
         self._leftBox()
+
+    def __getattribute__(self, name):
+        return object.__getattribute__(self, name)
+
+    def getMj(self):
+        return self._mj
 
     def _buildSingularFilters(self):
         uniKey = self._json['unique'].keys()
@@ -130,7 +141,7 @@ class BuildFilterPanel:
 
     @staticmethod
     def _notUnicos():
-        return widgets.Label(value="Nao Ha Caracteristicas Unicas", description="Nao ha", display="flex-shrink", layout = lt.notUnicos_layout()).add_class('vazio')
+        return widgets.Label(value="Nao Ha Caracteristicas Unicas", description="Nao ha", display="flex-shrink", layout = _lt.notUnicos_layout()).add_class('vazio')
 
     @staticmethod
     def _labelSingularFilter(key, value, description):
@@ -150,8 +161,13 @@ class BuildFilterPanel:
 
 
         for k, v in multiplos.iteritems():
-            self._multiplas.append(self._labelMultipleFilter(str(k),str(k)))
-            self._multiplas.append(self._boxMultipleFilters(v))
+            sBox = widgets.VBox()
+            sBox.children=[self._labelMultipleFilter(str(k), str(k)), self._boxMultipleFilters(v)]
+            sBox.log.info = str(k)
+            # print(sBox.log.info)
+            self._multiplas.append(sBox)
+            # self._multiplas.append(self._labelMultipleFilter(str(k),str(k)))
+            # self._multiplas.append(self._boxMultipleFilters(v))
 
 
     def _change(self, x):
@@ -174,37 +190,37 @@ class BuildFilterPanel:
 
     @staticmethod
     def _labelMultipleFilter(value, description):
-        return widgets.Label(value=value.capitalize(), description=description.capitalize(), display="flex-shrink", layout=lt.labelFilterMultiple_layout()).add_class("space")
+        return widgets.Label(value=value.capitalize(), description=description.capitalize(), display="flex-shrink", layout=_lt.labelFilterMultiple_layout()).add_class("space")
 
     def _boxMultipleFilters(self, childrens):
-        boxMultipleFilter = widgets.HBox([v for v in childrens], layout=lt.boxMultipleFilter_layout())
+        boxMultipleFilter = widgets.HBox([v for v in childrens], layout=_lt.boxMultipleFilter_layout())
         return boxMultipleFilter
 
     def _staticBox(self):
         unicos = self._buildSingularFilters()
         self._static.children = [i for i in unicos]
-        self._static.layout = lt.staticBox_layout()
+        self._static.layout = _lt.staticBox_layout()
         return self._static
 
     def _multipleBox(self):
         self._buildMultipleFilters()
-        self._multiple_box.layout = lt.multipleBox_layout()
+        self._multiple_box.layout = _lt.multipleBox_layout()
         self._multiple_box.style = {'description_width': 'initial'}
         self._multiple_box.children = [i for i in self._multiplas]
         return self._multiple_box
 
     def _filterButton(self):
-        self._filter_btn.layout = lt.filterBtn_layout()
+        self._filter_btn.layout = _lt.filterBtn_layout()
         self._filter_btn.style.button_color = '#009850'  # '#2CD660'
         self._filter_btn.on_click(self._aplicaFiltros)
         return self._filter_btn
 
     def _multiSelection(self):
-        self._selectMultiple.layout = lt.selectMultiple_layout()
+        self._selectMultiple.layout = _lt.selectMultiple_layout()
         return self._selectMultiple
 
     def _applyChooseButton(self):
-        self._applyChooses.layout = lt.applyChooseButton_layout()
+        self._applyChooses.layout = _lt.applyChooseButton_layout()
         self._applyChooses.style.button_color = "#009850"
         self._applyChooses.on_click(self._renderJson)
         return self._applyChooses
@@ -216,6 +232,8 @@ class BuildFilterPanel:
                 if self._file_Path[self._selectMultiple.options[i]] in self._mj[j]['file']:
                     indices[j] = self._selectMultiple.options[i]
 
+        global _arquivos
+        _arquivos = indices
         return indices
 
     def _getProperties(self, dictionary):
@@ -228,6 +246,8 @@ class BuildFilterPanel:
                     intersection[dictionary[i]] = dict()
                 intersection[dictionary[i]][j] = self._mj[i]['content'][j]  # - intersection[j]
 
+        global _refined
+        _refined = intersection
         return intersection
 
     def _renderJson(self, n):
@@ -248,8 +268,9 @@ class BuildFilterPanel:
 
         from renderJson import RenderJSON
         for k, v in self._arquivo.iteritems():
-            print k
-            display(RenderJSON(v))
+            pass
+            # print k
+            # display(RenderJSON(v))
 
     def exibeFiltrados(self, jsons):
         self._selectMultiple = self._multiSelection()
@@ -266,6 +287,8 @@ class BuildFilterPanel:
         self._selectMultiple.options = options
         self._selectMultiple.layout.visibility = "visible"
         self._select.children = [self._selectMultiple, self._applyChooseButton()]
+        global _fullFiles
+        _fullFiles = self._file_Path
         display(self._select)
 
     def _aplicaFiltros(self, n):
@@ -280,10 +303,10 @@ class BuildFilterPanel:
             self._emExibicao.value = "Sua busca retornou " + str(len(capturados)) + " de " + str(len(self._mj.keys())) + " arquivos"
 
         self.finded = list(capturados)
-        display('Os arquivos estao salvos na varivel finded. Para visualizar solicite a impressao da mesma. Caso queira exibir na caixa de dialogo, invoque o metodo exibeFiltrados.')
+        # display('Os arquivos estao salvos na varivel finded. Para visualizar solicite a impressao da mesma. Caso queira exibir na caixa de dialogo, invoque o metodo exibeFiltrados.')
 
     def _uniqueCollapse(self):
-        self._uniquePlusCollapse.children = [widgets.Label(value="Caracteristicas Unicas", description="Caracteristicas Unicas", display="flex-shrink", layout = lt.uniqueCollapse_layout()), self._collapsable()]
+        self._uniquePlusCollapse.children = [widgets.Label(value="Caracteristicas Unicas", description="Caracteristicas Unicas", display="flex-shrink", layout = _lt.uniqueCollapse_layout()), self._collapsable()]
         return self._uniquePlusCollapse
 
     def _collapseUnicas(self, n):
@@ -299,7 +322,7 @@ class BuildFilterPanel:
             self._collapse.icon = "fa-angle-double-down"
 
     def _collapsable(self):
-        self._collapse.layout = lt.collapseButton()
+        self._collapse.layout = _lt.collapseButton()
         self._collapse.style.button_color = "white"
         self._collapse.on_click(self._collapseUnicas)
         return self._collapse
@@ -311,15 +334,14 @@ class BuildFilterPanel:
     def _leftBox(self):
         left_box = widgets.VBox()
         left_box.children = [self._exibicao(),
-                            widgets.Label(value="Filtros", description="Filtros", display="flex-shrink", layout=lt.leftBox_layout()),
+                            widgets.Label(value="Filtros", description="Filtros", display="flex-shrink", layout=_lt.leftBox_layout()),
                              self._uniqueCollapse(),
                              self._staticBox(),
                              widgets.Label(value="Caracteristicas Multiplas", description="Caracteristicas Multiplas", display="flex-shrink",
-                                           layout=lt.labelCaracteristicasMultiplas_layout()).add_class('top-line'),
+                                           layout=_lt.labelCaracteristicasMultiplas_layout()).add_class('top-line'),
                              self._multipleBox(),
                              self._filterButton()]
 
-        left_box.layout = lt.leftBox_layout()
+        left_box.layout = _lt.leftBox_layout()
         display(HTML(self._css))
         display(left_box)
-

@@ -3,37 +3,71 @@ import matplotlib.pyplot as plt
 from analysis.plot import readSequence
 
 class Plot:
-    def __init__(self, files, filters, properties, labelX, labelY, legend=None):
+    def __init__(self, files, filters, properties, labelX, labelY, graphLabel, lineStyleOne, loc=2, ncol=3, lineStyleTwo=None, label2X=None, label2Y=None, axeType=None):
         self.files = files
         self.filters = filters
         self.properties = properties
         self.labelX = labelX
         self.labelY = labelY
-        self.legend = legend
+        self.graphLabel = graphLabel
+        self.lineStyleOne = lineStyleOne
+        self.loc = loc
+        self.ncol = ncol
+        self.lineStyleTwo = lineStyleTwo
+        self.label2X = label2X
+        self.label2Y = label2Y
+        self.axeType = axeType
+        print self.filters
+        print self.properties
         self.plotting()
+
     def plotting(self):
-        for file in self.files:
-            data = np.asarray(readSequence(filename=file,
-                                          filter=(self.filters),
-                                          properties=(self.properties)
-                                           )
-                              )
-            fig, ax1 = plt.subplots()
+        global ax2
+        fig, ax1 = plt.subplots(figsize=(16, 9))
+        if self.axeType == 'twinx':
             ax2 = ax1.twinx()
-            ax2.plot(data[:, 0], data[:, 1], label=self.labelX)
+            ax2.set_ylabel(self.label2X)
+        elif self.axeType == 'twiny':
+            ax2 = ax1.twiny()
+            ax2.set_xlabel(self.label2Y)
+        plots = []
+
+        i = 0
+        for filed in self.files:
+            j = 0
+            for (filt, prop) in zip(self.filters, self.properties):
+                var = np.asarray(readSequence(filename=filed, filter=filt, properties=prop))
+
+                if ax2:
+                    if j % 2 == 1:
+                        plots.append(ax1.plot(var[:, 0], var[:, 1], self.lineStyleOne, label=self.graphLabel[i]))
+                    else:
+                        plots.append(ax2.plot(var[:, 0], var[:, 1], self.lineStyleTwo, label=self.graphLabel[i]))
+                else:
+                    plots.append(ax1.plot(var[:, 0], var[:, 1], self.lineStyleOne, label=self.graphLabel[0]))
+                j += 1
+            i += 1
+
         ax1.set_xlabel(self.labelX)
         ax1.set_ylabel(self.labelY)
-        ax2.set_ylabel('Accuracy')
 
-        plt.legend(bbox_to_anchor=(0.,1.02,1.,.102), loc=3, ncol=4, mode="expand", borderaxespad=0.)
-        plt.show()
+        # Show
+        plt.legend(bbox_to_anchor=(-0., 1.02, 1., .102), loc='center', ncol=self.ncol, mode="expand", borderaxespad=0.)
+        plt.show(i for i in plots)
 
-
-pt = Plot(files=["/home/antonio/Documentos/lia-pln-notebooks/shortdoc_class/distant_supervision/log/train"
-                 "/henrico_cic_dilma.log"],
-         filters=("message.name", "EvalFMetric"),
-         properties=("message.epoch", "message.iteration", "message.values.macro.f", "message.values.micro.f"),
-         labelX="Epoch",
-         labelY="Loss")
+# path = "/home/junior/PycharmProjects/lia-pln-notebooks/shortdoc_class/log/tokenized/"
+# pt = Plot(
+#         files=['/home/junior/PycharmProjects/lia-pln-notebooks/shortdoc_class/log/tokenized/lr0.1_100epochs.txt'],
+#         #files=[path+"log.not2.wnn-lr0.1-numepochs50.txt", path+"log.not2.wnn-lr0.01-numepochs50.txt", path+"log.not2.wnn-lr0.001-numepochs50.txt"],
+#          filters=[('message.name', 'TrainLoss'), ('message.name', 'EvalAccuracy')],
+#          properties=[('message.epoch', 'message.values.loss'), ('message.epoch', 'message.values.accuracy')],
+#          labelX="EvalLoss",
+#          labelY="EvalFMetric",
+#          label2X='Accuracy',
+#          lineStyleOne="-",
+#          lineStyleTwo='--',
+#          axeType='twinx',
+#          graphLabel=['EvalLoss', 'EvalFMetric'])
+         # label=["lr 0.1", "lr 0.01", "lr 0.001"])
 # pt.plotting()
 

@@ -1,6 +1,6 @@
 from ipywidgets import Layout
 
-class Layouts:
+class LayoutSytle:
 
     def box_layout(self):
         return Layout(width="100%", display="flex", flex_direction="column", border="2px groove grey", align_items='stretch')
