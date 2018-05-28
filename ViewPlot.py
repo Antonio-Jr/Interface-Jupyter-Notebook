@@ -4,13 +4,12 @@ from itertools import izip
 
 from ipywidgets import widgets, Label, Layout
 from IPython.display import display, HTML
-from filterPanel import _arquivos, _refined, _fullFiles
-from preRenderJson import MontaTree
-from plotter import Plot
+from PreRenderJson import MontaTree
+from Plotter import Plot
 
 
 class PlotView():
-    def __init__(self, userFiles=None):
+    def __init__(self, instance=None, userFiles=None):
         self._css = '''
         <style>         
             /*.container{
@@ -50,9 +49,10 @@ class PlotView():
         self._userFiles = userFiles
         # if self._userFiles != None:
         # display(HTML('''<style>.container{width: 98%;}</style>'''))
-        self._files = _arquivos
-        self._fullPath = _fullFiles
-        self._refined = _refined
+        self._files = instance._arquivos
+        print(instance._arquivos)
+        self._fullPath = instance._fullFiles
+        self._refined = instance._refined
 
         ### Boxes Graph Creation ####
         self._plotMainBox = widgets.VBox()
@@ -195,7 +195,8 @@ class PlotView():
             if not item in self._filtersList:
                 self._filtersList.append(item)
         else:
-            self._filtersList.remove(item)
+            if item in self._filtersList:
+                self._filtersList.remove(item)
 
     def _cbProperties(self, file):
         options = list()

@@ -1,17 +1,12 @@
 # encoding: utf-8
 
 import ast
-
 from IPython.display import display, HTML
 from ipywidgets import widgets
-
 from Appearance import LayoutSytle
-from modulo_busca_arquivos import FindFiles, RefineJson, ApplyFilters
+from SearchFiles import FindFiles, RefineJson, ApplyFilters
 
 _lt = LayoutSytle()
-_arquivos = dict()
-_refined = {}
-_fullFiles = {}
 
 class BuildFilterPanel:
 
@@ -106,6 +101,9 @@ class BuildFilterPanel:
         self.finded = list()
         self._filtro = dict()
         self._arquivo = dict()
+        self._arquivos = dict()
+        self._refined = dict()
+        self._fullFiles = dict()
         self._file_Path = dict()
 
         ###### Variable that receive external methods return - Creation ######
@@ -115,14 +113,7 @@ class BuildFilterPanel:
         self._refineJson = RefineJson(self._mj)
         self._json = self._refineJson.build()
 
-
         self._leftBox()
-
-    def __getattribute__(self, name):
-        return object.__getattribute__(self, name)
-
-    def getMj(self):
-        return self._mj
 
     def _buildSingularFilters(self):
         uniKey = self._json['unique'].keys()
@@ -232,8 +223,7 @@ class BuildFilterPanel:
                 if self._file_Path[self._selectMultiple.options[i]] in self._mj[j]['file']:
                     indices[j] = self._selectMultiple.options[i]
 
-        global _arquivos
-        _arquivos = indices
+        self._arquivos = indices
         return indices
 
     def _getProperties(self, dictionary):
@@ -246,15 +236,14 @@ class BuildFilterPanel:
                     intersection[dictionary[i]] = dict()
                 intersection[dictionary[i]][j] = self._mj[i]['content'][j]  # - intersection[j]
 
-        global _refined
-        _refined = intersection
+        self._refined = intersection
         return intersection
 
     def _renderJson(self, n):
         indices = self._getIndices()
         intersection = self._getProperties(indices)
 
-        from preRenderJson import MontaTree
+        from PreRenderJson import MontaTree
         mt = MontaTree()
 
         for i in intersection.keys():
@@ -266,7 +255,7 @@ class BuildFilterPanel:
                     mt.fillNumProperties(ast.literal_eval(j))
             self._arquivo[i] = mt.dict
 
-        from renderJson import RenderJSON
+        from RenderJson import RenderJSON
         for k, v in self._arquivo.iteritems():
             pass
             # print k
@@ -287,8 +276,7 @@ class BuildFilterPanel:
         self._selectMultiple.options = options
         self._selectMultiple.layout.visibility = "visible"
         self._select.children = [self._selectMultiple, self._applyChooseButton()]
-        global _fullFiles
-        _fullFiles = self._file_Path
+        self._fullFiles = self._file_Path
         display(self._select)
 
     def _aplicaFiltros(self, n):

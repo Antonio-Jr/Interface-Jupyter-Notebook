@@ -17,12 +17,10 @@ class FindFiles:
             arquivos_log.extend([os.path.join(pastaAtual, arquivo) for arquivo in arquivos if arquivo.endswith('.log')])
 
         for i in arquivos_log:
-            # files = dict()
             files[j] = dict()
             files[j]['file'] = i
             files[j]['config'] = dict()
             files[j]['content'] = dict()
-            files[j]['keys'] = dict()
             with codecs.open(i, "rb") as log:
                 for line in log:
                     try:

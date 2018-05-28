@@ -17,12 +17,11 @@ class Plot:
         self.label2X = label2X
         self.label2Y = label2Y
         self.axeType = axeType
-        print self.filters
-        print self.properties
         self.plotting()
 
     def plotting(self):
         global ax2
+        ax2 = None
         fig, ax1 = plt.subplots(figsize=(16, 9))
         if self.axeType == 'twinx':
             ax2 = ax1.twinx()
@@ -38,13 +37,13 @@ class Plot:
             for (filt, prop) in zip(self.filters, self.properties):
                 var = np.asarray(readSequence(filename=filed, filter=filt, properties=prop))
 
-                if ax2:
+                if ax2 is not None:
                     if j % 2 == 1:
                         plots.append(ax1.plot(var[:, 0], var[:, 1], self.lineStyleOne, label=self.graphLabel[i]))
                     else:
                         plots.append(ax2.plot(var[:, 0], var[:, 1], self.lineStyleTwo, label=self.graphLabel[i]))
                 else:
-                    plots.append(ax1.plot(var[:, 0], var[:, 1], self.lineStyleOne, label=self.graphLabel[0]))
+                    plots.append(ax1.plot(var[:, 0], var[:, 1], self.lineStyleOne, label=self.graphLabel[i]))
                 j += 1
             i += 1
 
