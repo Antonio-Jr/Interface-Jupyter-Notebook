@@ -1,0 +1,17 @@
+{"timestamp": "2017/11/07 02:15:41", "module": "__main__", "level": "INFO", "message": {"seed": 13, "lr": 0.015, "hidden_size": 300}}
+
+
+{"timestamp": "2017/11/07 02:23:42", "module": "model.BasicModel", "level": "INFO", "message": {"name": "TrainLoss", "iteration": 80002, "subtype": "train", "epoch": 0, "values": {"accumLoss": 50269.037839766126}, "type": "metric"}}
+
+
+{"timestamp": "2017/11/07 02:29:34", "module": "model.BasicModel", "level": "INFO", "message": {"name": "TrainLoss", "iteration": 160004, "subtype": "train", "epoch": 1, "values": {"accumLoss": 46345.383620168985}, "type": "metric"}}
+
+
+{"timestamp": "2017/11/07 02:36:04", "module": "model.BasicModel", "level": "INFO", "message": {"name": "TrainLoss", "iteration": 240006, "subtype": "train", "epoch": 2, "values": {"accumLoss": 44962.621167984471}, "type": "metric"}}
+
+
+{"timestamp": "2017/11/07 02:42:37", "module": "model.BasicModel", "level": "INFO", "message": {"name": "TrainLoss", "iteration": 320008, "subtype": "train", "epoch": 3, "values": {"accumLoss": 44044.945924183492}, "type": "metric"}}
+
+
+{"timestamp": "2017/11/07 02:49:00", "module": "model.BasicModel", "level": "INFO", "message": {"name": "TrainLoss", "iteration": 400010, "subtype": "train", "epoch": 4, "values": {"accumLoss": 43301.950434088263}, "type": "metric"}}
+

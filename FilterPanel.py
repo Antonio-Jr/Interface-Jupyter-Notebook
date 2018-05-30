@@ -243,8 +243,8 @@ class BuildFilterPanel:
         indices = self._getIndices()
         intersection = self._getProperties(indices)
 
-        from PreRenderJson import MontaTree
-        mt = MontaTree()
+        from PreRenderJson import BuildTree
+        mt = BuildTree()
 
         for i in intersection.keys():
             for j in intersection[i]['message']:

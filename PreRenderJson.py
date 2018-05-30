@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-class MontaTree:
+class BuildTree:
 
     def __init__(self):
         self.numProperties = {}

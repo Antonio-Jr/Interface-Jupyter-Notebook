@@ -4,7 +4,7 @@ from itertools import izip
 
 from ipywidgets import widgets, Label, Layout
 from IPython.display import display, HTML
-from PreRenderJson import MontaTree
+from PreRenderJson import BuildTree
 from Plotter import Plot
 
 
@@ -50,7 +50,6 @@ class PlotView():
         # if self._userFiles != None:
         # display(HTML('''<style>.container{width: 98%;}</style>'''))
         self._files = instance._arquivos
-        print(instance._arquivos)
         self._fullPath = instance._fullFiles
         self._refined = instance._refined
 
@@ -170,13 +169,10 @@ class PlotView():
             k = izip(self._propsList[::2], self._propsList[i::2])
             prop.append(k.next())
 
-        Plot(files=self._filesToPlot, filters=self._filtersList, properties=prop, labelX=xLabel, labelY=yLabel, graphLabel=graphLabel, lineStyleOne=lineTypeOne, loc=loc,
-             ncol=ncol,
-             lineStyleTwo=lineTypeTwo, label2X=x2Label, label2Y=y2Label, axeType=self._axes)
+        Plot(files=self._filesToPlot, filters=self._filtersList, properties=prop, labelX=xLabel, labelY=yLabel, graphLabel=graphLabel, lineStyleOne=lineTypeOne, loc=loc, ncol=ncol, lineStyleTwo=lineTypeTwo, label2X=x2Label, label2Y=y2Label, axeType=self._axes)
 
     def _changeProperty(self, x):
         item = x.owner.style.description_width
-        print item
         name = x.owner.style._model_name
         file = self._fullPath[name]
         if x.new:
@@ -185,8 +181,10 @@ class PlotView():
             if not file in self._filesToPlot:
                 self._filesToPlot.append(file)
         elif not x.new:
-            self._propsList.remove(item)
-            self._filesToPlot.remove(file)
+            if item in self._propsList:
+                self._propsList.remove(item)
+            if file in self._filesToPlot:
+                self._filesToPlot.remove(file)
 
 
     def _changeFilter(self, x):
@@ -201,7 +199,7 @@ class PlotView():
     def _cbProperties(self, file):
         options = list()
         options.append(widgets.Label(value='message'))
-        p = MontaTree()
+        p = BuildTree()
         fileName = file
         breadcrumb = list()
         breadcrumb.append('message')
@@ -265,7 +263,7 @@ class PlotView():
 
     def _cbFilters(self, file):
         options = list()
-        f = MontaTree()
+        f = BuildTree()
         for j in self._refined[file]['message']:
             if isinstance(j, unicode) and ":" in j:
                 k = j.split(":")
